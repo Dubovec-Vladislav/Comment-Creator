@@ -1,26 +1,28 @@
 const inputText = document.querySelector('.input-text');
 const inputSize = document.querySelector('.input-size');
-const endRow = document.querySelector('.end-row');
+const endRowCheckbox = document.querySelector('.end-row');
 const outputResult = document.querySelector('.result');
+const btn = document.querySelector('.btn');
+let template;
 
+function setMinSize() {
+  minSize = inputText.value.length + 2; // why 2? - # + '_'
+  inputSize.min = minSize;
+  inputSize.value = (inputSize.value < minSize) ? minSize : inputSize.value;
+}
 
 function commentCreator() {
-  console.log(endRow.value);
+  setMinSize();
   let row = `// ${'-'.repeat(inputSize.value)} //`;
   let indents = ' '.repeat((inputSize.value - inputText.value.length) / 2);
-  let comment = `//${indents} ${inputText.value} ${indents}//`;
+  let comment = `//${indents}# ${inputText.value}${indents}//`;
+  comment = (comment.length < row.length) ? `//${indents}# ${inputText.value}${indents} //` : comment
 
-  if (comment.length < row.length) {
-    comment = `//${indents} ${inputText.value} ${indents} //`;
-  }
-
-  let template;
-
-  if (endRow.checked) {
+  if (endRowCheckbox.checked) {
     template = `${row}
 ${comment}
 ${row}
-  
+
 ${row}`
   } else {
     template = `${row}
@@ -28,16 +30,12 @@ ${comment}
 ${row}`
   }
 
-
   outputResult.value = template
-
-  document.querySelector('.btn').addEventListener('click', function () {
-    navigator.clipboard.writeText(template)
-  });
 }
 
 
 inputText.addEventListener('input', () => commentCreator());
 inputSize.addEventListener('input', () => commentCreator());
-endRow.addEventListener('input', () => commentCreator());
+endRowCheckbox.addEventListener('input', () => commentCreator());
+btn.addEventListener('click', () => navigator.clipboard.writeText(template));
 
